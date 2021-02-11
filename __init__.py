@@ -1,4 +1,4 @@
-from Users.Miranda1.Programming.toy_app.db import get_username
+from toy_app.db import get_password
 from flask import Flask, request, url_for, session, g, redirect, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -24,6 +24,13 @@ def register():
         elif get_username() is not None:
             error = 'User {} is already registered.'.format(username)
         flash(error)
+    return """
+    <!doctype html>
+    <form method="POST">
+        <label>User: <input name="username" /></label>
+        <label>User: <input name="password" type="password" /></label>
+        <input type="submit" />
+    </form> """
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -31,8 +38,8 @@ def login():
     #not sure what to do about error message
     error = None
     if request.method == 'POST':
-        request.form['username'],
-        request.form['password']):
+        request.form['username']
+        request.form['password']
         error = None
         password = get_password() 
         
@@ -50,10 +57,14 @@ def login():
             #error = 'Invalid username/password'
     # the code below is executed if the request method
     # was GET or the credentials were invalid
-    
-@app.route('/post', methods=['POST', 'GET'])
-    #to do 
-    def post():
+    return """
+    <!doctype html>
+    <form method="POST">
+        <label>User: <input name="username" /></label>
+        <label>User: <input name="password" type="password" /></label>
+        <input type="submit" />
+    </form> """
+
 
 
 
