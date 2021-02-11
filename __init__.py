@@ -1,5 +1,5 @@
-from toy_app.db import get_password
-import db_mock
+#from .db import get_password
+from . import db_mock
 from flask import Flask, request, url_for, session, g, redirect, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -27,13 +27,14 @@ def register():
 
         if error is None:
             db_mock.new_user(username,password)
-            return redirect(url_for('toy_app.login'))
+            return redirect(url_for('login'))
         flash(error)
     return """
     <!doctype html>
+    <h1>Registration page</h1>
     <form method="POST">
-        <label>User: <input name="username" /></label>
-        <label>User: <input name="password" type="password" /></label>
+        <label>Username: <input name="username" /></label>
+        <label>Password: <input name="password" type="password" /></label>
         <input type="submit" />
     </form> """
 
@@ -64,9 +65,10 @@ def login():
     # was GET or the credentials were invalid
     return """
     <!doctype html>
+    <h1>Login page</h1>
     <form method="POST">
-        <label>User: <input name="username" /></label>
-        <label>User: <input name="password" type="password" /></label>
+        <label>Username: <input name="username" /></label>
+        <label>Password: <input name="password" type="password" /></label>
         <input type="submit" />
     </form> """
 
