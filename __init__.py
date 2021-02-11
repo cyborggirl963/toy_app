@@ -1,4 +1,5 @@
 from toy_app.db import get_password
+import db_mock
 from flask import Flask, request, url_for, session, g, redirect, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -21,8 +22,12 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif get_username() is not None:
+        elif db_mock.get_username(username) is not None:
             error = 'User {} is already registered.'.format(username)
+
+        if error is None:
+            db_mock.new_user(username,password)
+            return redirect(url_for('toy_app.login'))
         flash(error)
     return """
     <!doctype html>
