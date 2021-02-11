@@ -1,9 +1,14 @@
 #from .db import get_password
 from . import db_mock
 from flask import Flask, request, url_for, session, g, redirect, flash
-from werkzeug.security import check_password_hash, generate_password_hash
+import werkzeug     
+from werkzeug import security  
 
 app = Flask(__name__)
+app.config.update(
+    TESTING=True,
+    SECRET_KEY='987654321'
+)
 
 @app.route('/')
 def hello_world():
@@ -44,20 +49,20 @@ def login():
     #not sure what to do about error message
     error = None
     if request.method == 'POST':
-        request.form['username']
-        request.form['password']
+        user = request.form['username']
+        pw = request.form['password']
         error = None
-        password = get_password() 
+        password = db_mock.get_password(user) 
         
         if user is None:
             error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
+        elif not security.check_password_hash(password, pw):
             error = 'Incorrect password.'
 
         if error is None:
             session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('my_pantry.upload'))
+            session['username'] = user
+            return redirect(url_for('post'))
 
         flash(error)
             #error = 'Invalid username/password'
@@ -72,7 +77,24 @@ def login():
         <input type="submit" />
     </form> """
 
+@app.route('/post', methods=['POST', 'GET'])
+def post():
+    if request.method == 'POST':
+        body = request.form['post']
+        error = None
 
+        if body is None:
+            error = 'Post text is required'
 
+        if error is None:
+            db_mock.save_post(session['username'],body)
+            return 'Success!'
 
-    
+    return """
+    <!doctype html>
+    <h1>Write post</h1>
+    <form method="POST">
+        <textarea rows="4" cols="50" name="post">
+        </textarea>
+        <input type="submit"/>
+    </form> """

@@ -1,5 +1,6 @@
 import psycopg2
-from werkzeug.security import check_password_hash, generate_password_hash
+import werkzeug     
+from werkzeug import security  
 
 import click
 from flask import current_app, g
@@ -20,7 +21,7 @@ def new_user(username,password):
     else:
         datab.execute(
                 'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_hash(password))
+                (username, security.generate_password_hash(password))
             )
         datab.commit()
 
