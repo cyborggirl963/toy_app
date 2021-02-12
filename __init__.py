@@ -22,11 +22,11 @@ def hello_world():
 def register():
     #needs finishing
     #removed return at the end with template stuff 
-    error = None
+    error = ""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        error = None
+        error = ""
 
         if not username:
             error = 'Username is required.'
@@ -45,7 +45,7 @@ def register():
     <head>
     <title>Registration Page</title>
     <style type="text/css">
-     .error:empty \{{
+     .error:empty {{
         display: none;
     }}
     </style>
@@ -70,20 +70,22 @@ def login():
     if request.method == 'POST':
         user = request.form['username']
         pw = request.form['password']
+        print(security.generate_password_hash(pw))
         error = None
-        password = db_mock.get_password(user) 
+        password = db.get_password(user) 
         
         if user is None:
             error = 'Incorrect username.'
-        elif not security.check_password_hash(password, pw):
+            print(error)
+        elif not security.check_password_hash(password,pw):
             error = 'Incorrect password.'
+            print(error)
 
         if error is None:
             session.clear()
             session['username'] = user
             return redirect(url_for('post'))
 
-        flash(error)
             #error = 'Invalid username/password'
     # the code below is executed if the request method
     # was GET or the credentials were invalid

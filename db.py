@@ -35,10 +35,13 @@ def user_exists(username):
         return False
 
 def get_password(username):
-    datab = get_db()
-    password = datab.execute(
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
             'SELECT password FROM users WHERE username = %s', (username,)
-        ).fetchone()
+        )
+    password = cur.fetchone()
+    print(password)
     return password
 
 def add_post(post):
