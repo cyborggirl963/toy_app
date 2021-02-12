@@ -1,5 +1,6 @@
 #from .db import get_password
 from . import db_mock
+from . import db
 from flask import Flask, request, url_for, session, g, redirect, flash
 import werkzeug     
 from werkzeug import security  
@@ -30,11 +31,11 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif db_mock.get_username(username) is not None:
+        elif db.user_exists(username):
             error = 'User {} is already registered.'.format(username)
 
-        if error is None:
-            db_mock.new_user(username,password)
+        else:
+            db.new_user(username,security.generate_password_hash(password))
             return redirect(url_for('login'))
         flash(error)
     return """

@@ -12,23 +12,31 @@ def get_db():
     return g.db
 
 def new_user(username,password):
-    datab = get_db()
-    error = None
-    if datab.execute(
-            'SELECT id FROM user WHERE username = ?', (username,)
-        ).fetchone() is not None:
-            error = 'User {} is already registered.'.format(username)
+    conn = get_db()
+    cur = conn.cursor()
+    #error = None
+    cur.execute(
+            'INSERT INTO users (username, password) VALUES (%s, %s)',
+            (username, security.generate_password_hash(password))
+        )
+    cur.commit()
+
+def user_exists(username):
+    conn = get_db()
+    cur = conn.cursor()
+    user = cur.execute(
+            'SELECT * FROM users WHERE username = %s', (username,)
+        )
+    print(user)
+    if user is not None:
+        return True
     else:
-        datab.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, security.generate_password_hash(password))
-            )
-        datab.commit()
+        return False
 
 def get_password(username):
     datab = get_db()
     password = datab.execute(
-            'SELECT password FROM user WHERE username = ?', (username,)
+            'SELECT password FROM users WHERE username = %s', (username,)
         ).fetchone()
     return password
 
@@ -47,7 +55,7 @@ def retrieve_post():
     conn = get_db()
     with conn.cursor() as cur:
         cur.execute(
-        'SELECT post FROM posts WHERE author_id = ?', (g.user['id'],)
+        'SELECT post FROM posts WHERE author_id = ?', (g.users['id'],)
         ).fetchone()
 
 def close_db(e=None):
