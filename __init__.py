@@ -22,6 +22,7 @@ def hello_world():
 def register():
     #needs finishing
     #removed return at the end with template stuff 
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -38,14 +39,28 @@ def register():
             db.new_user(username,security.generate_password_hash(password))
             return redirect(url_for('login'))
         flash(error)
-    return """
-    <!doctype html>
-    <h1>Registration page</h1>
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Registration Page</title>
+    <style type="text/css">
+     .error:empty \{{
+        display: none;
+    }}
+    </style>
+    </head>
+    <body>
+    <h1>Registration Page</h1>
+    <div class="error">{error}</div>
     <form method="POST">
         <label>Username: <input name="username" /></label>
         <label>Password: <input name="password" type="password" /></label>
         <input type="submit" />
-    </form> """
+    </form> 
+    </body>
+    </html>
+    """
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

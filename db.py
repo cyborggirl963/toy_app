@@ -24,9 +24,10 @@ def new_user(username,password):
 def user_exists(username):
     conn = get_db()
     cur = conn.cursor()
-    user = cur.execute(
+    cur.execute(
             'SELECT * FROM users WHERE username = %s', (username,)
         )
+    user = cur.fetchone()
     print(user)
     if user is not None:
         return True
