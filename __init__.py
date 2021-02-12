@@ -10,6 +10,9 @@ app.config.update(
     SECRET_KEY='987654321'
 )
 
+from . import db
+db.init_app(app)
+
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
