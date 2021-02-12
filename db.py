@@ -19,7 +19,7 @@ def new_user(username,password):
             'INSERT INTO users (username, password) VALUES (%s, %s)',
             (username, security.generate_password_hash(password))
         )
-    cur.commit()
+    conn.commit()
 
 def user_exists(username):
     conn = get_db()
