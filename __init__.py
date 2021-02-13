@@ -3,7 +3,7 @@ from . import db_mock
 from . import db
 from flask import Flask, request, url_for, session, g, redirect, flash
 import werkzeug     
-from werkzeug import security  
+from werkzeug import security
 
 app = Flask(__name__)
 app.config.update(
@@ -36,7 +36,7 @@ def register():
             error = 'User {} is already registered.'.format(username)
 
         else:
-            db.new_user(username,security.generate_password_hash(password))
+            db.new_user(username,password)
             return redirect(url_for('login'))
         flash(error)
     return f"""
@@ -71,13 +71,14 @@ def login():
         user = request.form['username']
         pw = request.form['password']
         print(security.generate_password_hash(pw))
+        print(pw)
         error = None
         password = db.get_password(user) 
         
         if user is None:
             error = 'Incorrect username.'
             print(error)
-        elif not security.check_password_hash(password,pw):
+        elif not security.check_password_hash(pw,password):
             error = 'Incorrect password.'
             print(error)
 
