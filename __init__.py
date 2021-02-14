@@ -26,7 +26,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        error = ""
+        #error = ""
 
         if not username:
             error = 'Username is required.'
@@ -66,14 +66,13 @@ def register():
 def login():
     #needs finishing
     #not sure what to do about error message
-    error = None
+    error = ""
     if request.method == 'POST':
         user = request.form['username']
         pw = request.form['password']
         print(security.generate_password_hash(pw))
         print(pw)
-        error = None
-        password = db.get_password(user) 
+        password = db.get_password(user)[0] 
         
         if user is None:
             error = 'Incorrect username.'
@@ -82,7 +81,7 @@ def login():
             error = 'Incorrect password.'
             print(error)
 
-        if error is None:
+        if error is "":
             session.clear()
             session['username'] = user
             return redirect(url_for('post'))
@@ -96,7 +95,7 @@ def login():
     <form method="POST">
         <label>Username: <input name="username" /></label>
         <label>Password: <input name="password" type="password" /></label>
-        <input type="submit" />
+        <input type="submit"/>
     </form> """
 
 @app.route('/post', methods=['POST', 'GET'])
@@ -109,8 +108,8 @@ def post():
             error = 'Post text is required'
 
         if error is None:
-            db_mock.save_post(session['username'],body)
-            return 'Success!'
+            db.add_post(body,session['username'])
+            return redirect(url_for('success'))
 
     return """
     <!doctype html>
@@ -120,3 +119,24 @@ def post():
         </textarea>
         <input type="submit"/>
     </form> """
+
+@app.route('/success', methods=['POST', 'GET'])
+def success():
+    post_text = db.retrieve_post(session['username'])
+    if request.method == 'POST':
+        return redirect(url_for('post'))
+
+    return f"""
+    <!doctype html>
+    <html>
+    <head
+    <h1>Success! Your post:</h1>
+    </head>
+    <body>
+        {post_text}
+    <form method="POST">
+        <input type="submit"/>
+    </form>
+    </body>
+    </html>
+    """

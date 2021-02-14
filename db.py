@@ -44,23 +44,36 @@ def get_password(username):
     print(password)
     return password
 
-def add_post(post):
+def get_id(username):
     conn = get_db()
-    print(conn)
-    with conn.cursor() as cur:
-        cur.execute(
-            'INSERT INTO posts (post, author_id)'
-            ' VALUES (?, ?)',
-            (post, g.user['id'])
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT id FROM users WHERE username = %s', (username,)
+    )
+    id = cur.fetchone()[0]
+    print(id)
+    return id
+
+def add_post(post,username):
+    conn = get_db()
+    cur = conn.cursor()
+    author_id = get_id(username)
+    cur.execute(
+        'INSERT INTO posts (post, author_id)'
+        ' VALUES (%s, %s)',
+        (post,author_id)
         )
     conn.commit()
 
-def retrieve_post():
+def retrieve_post(username):
     conn = get_db()
-    with conn.cursor() as cur:
-        cur.execute(
-        'SELECT post FROM posts WHERE author_id = ?', (g.users['id'],)
-        ).fetchone()
+    cur = conn.cursor()
+    author_id = get_id(username)
+    cur.execute(
+    'SELECT post FROM posts WHERE author_id = %s', (author_id,)
+    )
+    post = cur.fetchmany()
+    return post
 
 def close_db(e=None):
     db = g.pop('db', None)
